@@ -1,0 +1,153 @@
+---
+title: "GRADS Outreach Evaluations"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+# libraries
+library(readxl)
+library(stringr)
+library(stats)
+library(dplyr)
+library(tidyverse)
+```
+
+# Add category for "Mixed"
+```{r}
+# read in data
+evals <- read_excel("D.R.E.A.M. Office Public Health Workshop Feedback Form (Responses).xlsx")
+
+#count number of values
+#evals %>% count(evals$`Education Level`)
+```
+
+```{r}
+# group by education level
+
+four_year <- evals %>% filter(evals$`Education Level` == "4-year")
+
+comm_college <- evals %>% filter(evals$`Education Level` == "Community College")
+
+working_prof <- evals %>% filter(evals$`Education Level` == "WP")
+
+high_school <- evals %>% filter(evals$`Education Level` == "High School")
+
+middle_school <- evals %>% filter(evals$`Education Level` == "Middle School")
+
+# create csv files
+write_csv(four_year, path = "four_year_college_evals.csv")
+write_csv(comm_college, path = "community_college_evals.csv")
+write_csv(working_prof, path = "working_prof_evals.csv")
+write_csv(high_school, path = "high_school_evals.csv")
+write_csv(middle_school, path = "middle_school_evals.csv")
+```
+
+```{r}
+# creating variable of relevant column names
+ph_understanding <- evals$`I feel like my level of understanding of public health increased as a result of this workshop.`
+
+next_steps <- evals$`I have a better understanding of next steps/future planning if I choose public health as my path.`
+
+prepped_to_apply <- evals$`I feel better prepared to apply to graduate school in public health.`
+
+facil_prepared <- evals$`The workshop facilitator was well prepared.`
+
+facil_helpful <- evals$`The workshop facilitator was helpful.`
+
+reasonable_pace <- evals$`The workshop facilitator presented the material at a reasonable pace.`
+```
+
+
+```{r}
+# Run ANOVA - Improved Understanding
+ph_understanding_anova <- aov(ph_understanding ~ evals$`Education Level`, data = evals)
+# Summary of ANOVA
+summary(ph_understanding_anova)
+```
+
+```{r}
+# Run ANOVA - Next Steps
+next_steps_anova <- aov(next_steps ~ evals$`Education Level`, data = evals)
+# Summary of ANOVA
+summary(next_steps_anova)
+```
+
+
+```{r}
+# Run ANOVA - Prepared to Apply
+prepped_to_apply_anova <- aov(prepped_to_apply ~ evals$`Education Level`, data = evals)
+# Summary of ANOVA
+summary(prepped_to_apply_anova)
+```
+
+```{r}
+# Run ANOVA - Facilitator Prepared
+facil_prepared_anova <- aov(facil_prepared ~ evals$`Education Level`, data = evals)
+# Summary of ANOVA
+summary(ph_understanding_anova)
+```
+
+```{r}
+# Run ANOVA - Facilitator Helpful
+facil_helpful_anova <- aov(facil_helpful ~ evals$`Education Level`, data = evals)
+# Summary of ANOVA
+summary(facil_helpful_anova)
+```
+
+
+```{r}
+# Run ANOVA - Reasonable Pace
+reasonable_pace_anova <- aov(reasonable_pace ~ evals$`Education Level`, data = evals)
+# Summary of ANOVA
+summary(reasonable_pace_anova)
+```
+
+# Running Tukey Pairwise for Significant Questions (p < 0.05)
+
+```{r}
+#Tukey multiple pairwise-comparisons
+TukeyHSD(ph_understanding_anova)
+
+# print means by Education Level
+tapply(evals$`I feel like my level of understanding of public health increased as a result of this workshop.`, evals$`Education Level`, summary)
+
+```
+
+
+```{r}
+#Tukey multiple pairwise-comparisons
+TukeyHSD(next_steps_anova)
+
+# print means by Education Level
+tapply(evals$`I have a better understanding of next steps/future planning if I choose public health as my path.`, evals$`Education Level`, summary)
+?tapply
+```
+
+```{r}
+#Tukey multiple pairwise-comparisons
+TukeyHSD(facil_prepared_anova)
+
+# print means by Education Level
+tapply(evals$`The workshop facilitator was well prepared.`, evals$`Education Level`, summary)
+
+```
+
+```{r}
+#Tukey multiple pairwise-comparisons
+TukeyHSD(facil_helpful_anova)
+
+# print means by Education Level
+tapply(evals$`The workshop facilitator was helpful.`, evals$`Education Level`, summary)
+```
+
+```{r}
+#Tukey multiple pairwise-comparisons
+TukeyHSD(reasonable_pace_anova)
+
+# print means by Education Level
+tapply(evals$`The workshop facilitator presented the material at a reasonable pace.`, evals$`Education Level`, summary)
+```
